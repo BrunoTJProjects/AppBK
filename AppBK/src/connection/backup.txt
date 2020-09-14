@@ -1,0 +1,227 @@
+package connection;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintStream;
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
+import java.net.Socket;
+import java.net.SocketAddress;
+
+import user.Usuario;
+
+@SuppressWarnings("unused")
+public class ConexaoBaseDados {
+
+	private InetAddress inetAddress;
+	private Usuario usuario;
+	private Socket socket;
+	private Conexao threadConnection;
+
+	public ConexaoBaseDados(String host, int port) {
+		threadConnection = new Conexao(host, port);
+	}
+
+	public void setInterfaceConnectionListener(InterfaceCommand interfaceCommand) {
+		threadConnection.setInterfaceConnectionListener(interfaceCommand);
+	}
+
+	public void signInWithUsuario(Usuario user) {
+		this.usuario = user;
+	}
+
+	public boolean connect() {
+		if (threadConnection.connect()) {
+			threadConnection.start();
+			return true;
+		}
+		return false;
+	}
+
+	public void detroy() {
+		threadConnection.deathThread();
+	}
+
+	private class Conexao extends Thread {
+		private String host;
+		private int port;
+		private boolean isConnected = false;
+		private String comando;
+		private BufferedReader br;
+		private StringBuilder stringBuilder;
+		private PrintStream ps;
+		private InterfaceCommand interfaceCommand;
+
+		public Conexao(String host, int port) {
+			this.host = host;
+			this.port = port;
+		}
+
+		public boolean connect() {
+
+			try {
+
+				if (socket != null && socket.isConnected()) {
+					ps.close();
+					br.close();
+					socket.close();
+				}
+				
+				socket = new Socket();				
+				socket.connect(new InetSocketAddress(host, port), 3000);
+				br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+				ps = new PrintStream(socket.getOutputStream());
+				stringBuilder = new StringBuilder();
+
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+//				e.printStackTrace();
+				return false;
+			}
+			isConnected = true;
+			startCommandFromInterface(InterfaceCommand.ON_CONNECTED);
+			return true;
+		}
+
+		/*
+		 * private String getComando() { return comando; }
+		 * 
+		 * private void setComando(String comando) { this.comando = comando; }
+		 */
+
+		@Override
+		public void run() {
+			while (isConnected) {
+
+				while (socket.isConnected()) {
+
+					try {
+
+						sleep(1000);
+
+						if (br.ready()) {
+							while (br.ready()) {
+								int retorno = br.read();
+								stringBuilder.append(Character.toChars(retorno));
+							}
+							startCommandFromInterface(InterfaceCommand.ON_COMMAND_RECEIVED);
+						}
+						stringBuilder.delete(0, stringBuilder.length());
+
+						if (comando != null && !comando.isEmpty()) {
+							ps.println(comando);
+						}
+
+					} catch (IOException | InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+
+			}
+		}
+
+		public void deathThread() {
+			this.isConnected = false;
+		}
+
+		public void setInterfaceConnectionListener(InterfaceCommand interfaceCommand) {
+			this.interfaceCommand = interfaceCommand;
+		}
+
+//		 Método que é chamado para chamar o método especificado por parâmetro da Classe que está implementando a interface
+		private void startCommandFromInterface(String whichMethod) {
+			if (this.interfaceCommand == null)
+				return;
+			switch (whichMethod) {
+
+			case InterfaceCommand.ON_COMMAND_RECEIVED:
+				this.interfaceCommand.onCommandReceveived(stringBuilder.toString());
+				break;
+			case InterfaceCommand.ON_CONNECTED:
+				this.interfaceCommand.onConnected();
+			}
+		}
+	}
+
+	public interface InterfaceCommand {
+		public static final String ON_CONNECTED = "conexao_estabelecida";
+		public static final String ON_COMMAND_RECEIVED = "comando_recebido";
+
+		public void onConnected();
+
+		public void onCommandReceveived(String stringRecebida);
+
+	}
+}
+
+
+
+
+
+
+
+
+		/*Cliente cliente = new Cliente("Glaucio Guerra", 'M', "0000000001");
+	    try
+	    {
+	      //Gera o arquivo para armazenar o objeto
+	      FileOutputStream arquivoGrav =
+	      new FileOutputStream("saida.dat");
+	      //Classe responsavel por inserir os objetos
+	      ObjectOutputStream objGravar = new ObjectOutputStream(arquivoGrav);
+	      //Grava o objeto cliente no arquivo
+	      objGravar.writeObject(cliente);
+	      objGravar.flush();
+	      objGravar.close();
+	      arquivoGrav.flush();
+	      arquivoGrav.close();
+	      System.out.println("Objeto gravado com sucesso!");
+	    }
+
+	    catch(Exception e) {
+	      e.printStackTrace();
+	    }
+	    System.out.println("Recuperando objeto: ");
+	    try
+	    {
+	      //Carrega o arquivo
+	      FileInputStream arquivoLeitura = new FileInputStream("saida.dat");
+	           // Classe responsavel por recuperar os objetos do arquivo
+	      ObjectInputStream objLeitura =
+	      new ObjectInputStream(arquivoLeitura);
+	      
+//	      Cliente cli = (Cliente) objLeitura.readObject();
+//	      System.out.println(cli.getNome());
+	      
+//	      Cliente cli = getObject(Cliente.class, objLeitura);
+//	      System.out.println(cli);
+	      
+	      Cliente cli = getObject(objLeitura);
+	      
+	      System.out.println(cliente.getCpf());
+	      
+	      objLeitura.close();
+	      arquivoLeitura.close();
+	    }
+	    catch(Exception e) {
+	      e.printStackTrace();
+	    }
+		
+		
+		
+	}
+
+	public static <Tipo> Tipo getObject(Class<Tipo> classe, ObjectInputStream ob)
+			throws ClassNotFoundException, IOException {
+		return classe.cast(ob.readObject());
+	}
+
+
+	public static <T> T getObject(ObjectInputStream ob) throws ClassNotFoundException, IOException {
+		return (T) ob.readObject();
+	}*/
+
+
+
