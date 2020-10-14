@@ -19,17 +19,17 @@ public class ComunicacaoServidor implements ConexaoBaseDados.InterfaceCommand {
 		}
 		return true;
 	}
-	
+
 	public void enviarComando(String comando) {
 		conexaoBaseDados.sendCommand(comando);
-	}	
+	}
 
 	public void desconectarDoServidor(boolean reconnect) {
 		conexaoBaseDados.destroy(reconnect);
 	}
 
 	public void signInWithEmailAndPassword(String email, String password) {
-		conexaoBaseDados.signInWithEmailAndPassword(email, password);
+
 	}
 
 	@Override
@@ -41,11 +41,6 @@ public class ComunicacaoServidor implements ConexaoBaseDados.InterfaceCommand {
 	@Override
 	public void onCommandReceveived(String stringRecebida) {
 		System.out.println("Comando recebido: " + stringRecebida);
-//		if (stringRecebida.equals("Digite seu e-mail:\r\n")) {
-//			conexaoBaseDados.sendCommand("bruno.melo@tcm10.com.br");
-//		} else if (stringRecebida.equals("Digite sua senha:\r\n")) {
-//			conexaoBaseDados.sendCommand("8aB1yGj4");
-//		}
 	}
 
 	@Override
@@ -65,7 +60,7 @@ public class ComunicacaoServidor implements ConexaoBaseDados.InterfaceCommand {
 	}
 
 	private void inicializarComponentes(String host, int port) {
-		if(conexaoBaseDados == null) {
+		if (conexaoBaseDados == null) {
 			conexaoBaseDados = new ConexaoBaseDados(host, port);
 			conexaoBaseDados.setInterfaceConnectionListener(this);
 		}

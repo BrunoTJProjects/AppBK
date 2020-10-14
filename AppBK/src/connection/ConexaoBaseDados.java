@@ -28,10 +28,6 @@ public class ConexaoBaseDados {
 		threadConnection.setInterfaceConnectionListener(interfaceCommand);
 	}
 
-	public void signInWithEmailAndPassword(String email, String password) {
-
-	}
-
 	public boolean connect() {
 		if (threadConnection.connect()) {
 			if (!threadConnection.isAlive()) {
