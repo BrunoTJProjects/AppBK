@@ -12,13 +12,13 @@ import java.net.SocketAddress;
 import user.Usuario;
 
 @SuppressWarnings("unused")
-public class ConexaoBaseDados {
+public class ServerConnection {
 
 //	private Usuario usuario;
 	private long contador;
 	private Conexao threadConnection;
 
-	public ConexaoBaseDados(String host, int port) {
+	public ServerConnection(String host, int port) {
 		if (threadConnection == null) {
 			threadConnection = new Conexao(host, port);
 		}

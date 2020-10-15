@@ -2,22 +2,29 @@ package principal;
 
 import java.util.Scanner;
 
-import connection.ComunicacaoServidor;
+import connection.ServerCommunication;
 
 public class Main {
 
 	@SuppressWarnings("resource")
 	public static void main(String[] args) throws InterruptedException {
 
-		ComunicacaoServidor comunicacaoServidor = new ComunicacaoServidor("179.107.244.81", 58365);
+		ServerCommunication serverCommunication = new ServerCommunication("179.107.244.81", 58365);
 
-		System.out.println(comunicacaoServidor.tryConnect());
+		System.out.println(serverCommunication.tryConnect());
 
 		Scanner scan = new Scanner(System.in);
 		String comando = "";
+		Thread.sleep(8000);
+		
+		
+		serverCommunication.login();
+		
+		
 		while(!comando.equals("fim")) {
 			comando = scan.nextLine();
-			comunicacaoServidor.enviarComando(comando);
+			
+			serverCommunication.getChaves();
 		}		
 		
 //		comunicacaoServidor.desconectarDoServidor(true);
