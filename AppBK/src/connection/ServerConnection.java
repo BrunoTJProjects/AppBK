@@ -107,9 +107,11 @@ public class ServerConnection {
 							int retorno = br.read();
 							stringBuilder.append(Character.toChars(retorno));
 						}
-						startCommandFromInterface(InterfaceCommand.ON_COMMAND_RECEIVED);
+
 						if (String.valueOf('\0').equals(stringBuilder.toString())) {
 							contador = System.currentTimeMillis();
+						} else {
+							startCommandFromInterface(InterfaceCommand.ON_COMMAND_RECEIVED);
 						}
 					}
 
@@ -173,7 +175,7 @@ public class ServerConnection {
 
 	private boolean passouTempoDemais() {
 		long diferenca = System.currentTimeMillis() - contador;
-		if (diferenca > 9000) {
+		if (diferenca > 45000) {
 			contador = System.currentTimeMillis();
 			return true;
 		} else {

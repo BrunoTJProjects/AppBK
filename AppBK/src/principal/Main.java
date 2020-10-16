@@ -2,6 +2,8 @@ package principal;
 
 import java.util.Scanner;
 
+import org.json.JSONObject;
+
 import connection.ServerCommunication;
 
 public class Main {
@@ -15,16 +17,32 @@ public class Main {
 
 		Scanner scan = new Scanner(System.in);
 		String comando = "";
-		Thread.sleep(8000);
-		
-		
-		serverCommunication.login();
-		
 		
 		while(!comando.equals("fim")) {
 			comando = scan.nextLine();
-			
-			serverCommunication.getChaves();
+			switch (comando) {
+			case "login":
+				serverCommunication.login();
+				break;
+			case "logout":
+				serverCommunication.logout();
+				break;
+			case "getChaves":
+				serverCommunication.getChaves("11-22-33-44-55-66");
+				break;
+			case "setChaves":
+				serverCommunication.setChaves("11-22-33-44-55-66", new JSONObject("{\"rele1\":\"1\"}"));
+				break;
+			case "getChave":
+				serverCommunication.getChave("11-22-33-44-55-66", "rele1");
+				break;
+			case "setChave":
+				serverCommunication.setChave("11-22-33-44-55-66", "rele1", "1");
+				break;
+			case "deleteChave":
+				serverCommunication.deleteChave("11-22-33-44-55-66", "rele1");
+				break;
+			}
 		}		
 		
 //		comunicacaoServidor.desconectarDoServidor(true);
