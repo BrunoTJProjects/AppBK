@@ -22,25 +22,25 @@ public class Main {
 			comando = scan.nextLine();
 			switch (comando) {
 			case "login":
-				serverCommunication.login();
+				System.out.println(serverCommunication.login());
 				break;
 			case "logout":
-				serverCommunication.logout();
+				System.out.println(serverCommunication.logout());
 				break;
 			case "getChaves":
-				serverCommunication.getChaves("11-22-33-44-55-66");
+				serverCommunication.getChaves("11:22:33:44:55:66");
 				break;
 			case "setChaves":
-				serverCommunication.setChaves("11-22-33-44-55-66", new JSONObject("{\"rele1\":\"1\"}"));
+				serverCommunication.setChaves("11:22:33:44:55:66", new JSONObject("{\"rele1\":\"1\"}"));
 				break;
 			case "getChave":
-				serverCommunication.getChave("11-22-33-44-55-66", "rele1");
+				serverCommunication.getChave("11:22:33:44:55:66", "rele1");
 				break;
 			case "setChave":
-				serverCommunication.setChave("11-22-33-44-55-66", "rele1", "1");
+				serverCommunication.setChave("11:22:33:44:55:66", "rele1", "1");
 				break;
 			case "deleteChave":
-				serverCommunication.deleteChave("11-22-33-44-55-66", "rele1");
+				serverCommunication.deleteChave("11:22:33:44:55:66", "rele1");
 				break;
 			}
 		}		
