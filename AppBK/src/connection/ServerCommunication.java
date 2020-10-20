@@ -10,12 +10,13 @@ public class ServerCommunication implements ServerConnection.InterfaceCommand {
 	private String response;
 	private ServerConnection serverConnection;
 	private Request request = new Request();
-//	private Usuario usuario;
+	private OnCommandReceived listener;
 
-	public ServerCommunication(String host, int port) {
+	public ServerCommunication(String host, int port, OnCommandReceived listener) {
 		super();
 		this.host = host;
 		this.port = port;
+		this.listener = listener;
 		inicializarComponentes(host, port);
 	}
 
@@ -39,12 +40,17 @@ public class ServerCommunication implements ServerConnection.InterfaceCommand {
 	@Override
 	public void onCommandReceveived(String stringRecebida) {
 		response = stringRecebida;
+		if(JSONObject.isJSONValid(stringRecebida)) {
+			JSONObject json = new JSONObject(stringRecebida);
+			if(!json.isNull("request"))
+			listener.onCommandReveived(stringRecebida);
+		}		
 //		System.out.println("Comando recebido: " + stringRecebida);
 	}
 
-	public boolean login() {
+	public boolean login(String login, String password) {
 		response = null;
-		request.requisicaoLogin("bruno.melo@tcm10.com.br", "8aB1yGj4");
+		request.requisicaoLogin(login, password);
 		Utilidade.contador = System.currentTimeMillis();
 		while (!Utilidade.passouTempoDemais() && response == null) {
 			try {
@@ -85,24 +91,106 @@ public class ServerCommunication implements ServerConnection.InterfaceCommand {
 
 	}
 
-	public void getChaves(String mac) {
+	public String getChaves(String mac) {
+		response = null;
 		request.getChaves(mac);
+		Utilidade.contador = System.currentTimeMillis();
+		while (!Utilidade.passouTempoDemais() && response == null) {
+			try {
+				Thread.sleep(1);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+
+		return response;
 	}
 
-	public void setChaves(String mac, JSONObject chaves) {
+	public boolean setChaves(String mac, JSONObject chaves) {
+		response = null;
 		request.setChaves(mac, chaves);
+		Utilidade.contador = System.currentTimeMillis();
+		while (!Utilidade.passouTempoDemais() && response == null) {
+			try {
+				Thread.sleep(1);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+
+		if (response == null)
+			return false;
+
+		if (response.equals("ok"))
+			return true;
+
+		return false;
+
 	}
 
-	public void getChave(String mac, String chave) {
+	public String getChave(String mac, String chave) {
+		response = null;
 		request.getChave(mac, chave);
+		Utilidade.contador = System.currentTimeMillis();
+		while (!Utilidade.passouTempoDemais() && response == null) {
+			try {
+				Thread.sleep(1);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+
+		return response;
+
 	}
 
-	public void setChave(String mac, String chave, String valor) {
+	public boolean setChave(String mac, String chave, String valor) {
+		response = null;
 		request.setChave(mac, chave, valor);
+		Utilidade.contador = System.currentTimeMillis();
+		while (!Utilidade.passouTempoDemais() && response == null) {
+			try {
+				Thread.sleep(1);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+
+		if (response == null)
+			return false;
+
+		if (response.equals("ok"))
+			return true;
+
+		return false;
 	}
 
-	public void deleteChave(String mac, String chave) {
+	public boolean deleteChave(String mac, String chave) {
+		response = null;		
 		request.deleteChave(mac, chave);
+		Utilidade.contador = System.currentTimeMillis();
+		while (!Utilidade.passouTempoDemais() && response == null) {
+			try {
+				Thread.sleep(1);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+
+		if (response == null)
+			return false;
+
+		if (response.equals("ok"))
+			return true;
+
+		return false;
+		
+
 	}
 
 	@Override
@@ -215,6 +303,10 @@ public class ServerCommunication implements ServerConnection.InterfaceCommand {
 			requisicao = new JSONObject(textReq);
 		}
 
+	}
+	
+	public interface OnCommandReceived{
+		void onCommandReveived(String comando);
 	}
 
 }
