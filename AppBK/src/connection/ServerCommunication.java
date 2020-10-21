@@ -2,8 +2,6 @@ package connection;
 
 import org.json.JSONObject;
 
-import utils.Utilidade;
-
 public class ServerCommunication implements ServerConnection.InterfaceCommand {
 	private String host;
 	private int port;
@@ -39,158 +37,90 @@ public class ServerCommunication implements ServerConnection.InterfaceCommand {
 
 	@Override
 	public void onCommandReceveived(String stringRecebida) {
-		response = stringRecebida;
-		if(JSONObject.isJSONValid(stringRecebida)) {
-			JSONObject json = new JSONObject(stringRecebida);
-			if(!json.isNull("request"))
-			listener.onCommandReveived(stringRecebida);
-		}		
-//		System.out.println("Comando recebido: " + stringRecebida);
+		if (stringRecebida != null && !stringRecebida.isEmpty()) {
+
+			if (!JSONObject.isJSONValid(stringRecebida)) {
+				switch (stringRecebida) {
+				case "Cliente login was Successful":
+					listener.onLoginRealized();
+					break;
+				case "Você foi desconectado":
+					listener.onLogoutRealized();
+					break;
+				case "ok":
+					listener.onActionConfirmed();
+					break;
+				case "Este dispositivo não está conectado":
+					listener.onDisconnectedDevice();
+					break;
+				default:
+					listener.onKeyReceived(stringRecebida);
+				}
+			} else {
+				JSONObject json = new JSONObject(stringRecebida);
+				if (!json.isNull("request")) {
+					String request = json.getString("request");
+					if(request != null && !request.isEmpty()) {
+						switch (request) {
+						case "setKey":
+							listener.onKeyReceived(json.getString("key"), json.getString("value"));
+							break;
+						case "setKeys":
+							listener.onKeysReceived(json.getJSONObject("keys").toString());
+							break;
+						}
+					}
+				} else {
+					listener.onKeysReceived(stringRecebida);
+				}
+			}
+
+		}
 	}
 
-	public boolean login(String login, String password) {
-		response = null;
+	public void login(String login, String password) {
+//		response = null;
 		request.requisicaoLogin(login, password);
-		Utilidade.contador = System.currentTimeMillis();
-		while (!Utilidade.passouTempoDemais() && response == null) {
-			try {
-				Thread.sleep(1);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-		if (response == null)
-			return false;
-
-		if (response.equals("Cliente login was Successful"))
-			return true;
-
-		return false;
+//		Utilidade.contador = System.currentTimeMillis();
+//		while (!Utilidade.passouTempoDemais() && response == null) {
+//			try {
+//				Thread.sleep(1);
+//			} catch (InterruptedException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
+//		}
+//		if (response == null)
+//			return false;
+//
+//		if (response.equals("Cliente login was Successful"))
+//			return true;
+//
+//		return false;
 	}
 
-	public boolean logout() {
-		response = null;
+	public void logout() {
 		request.requisicaoLogout();
-		Utilidade.contador = System.currentTimeMillis();
-		while (!Utilidade.passouTempoDemais() && response == null) {
-			try {
-				Thread.sleep(1);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-		if (response == null)
-			return false;
-
-		if (response.equals("Você foi desconectado"))
-			return true;
-
-		return false;
-
 	}
 
-	public String getChaves(String mac) {
-		response = null;
+	public void getChaves(String mac) {
 		request.getChaves(mac);
-		Utilidade.contador = System.currentTimeMillis();
-		while (!Utilidade.passouTempoDemais() && response == null) {
-			try {
-				Thread.sleep(1);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-
-		return response;
 	}
 
-	public boolean setChaves(String mac, JSONObject chaves) {
-		response = null;
+	public void setChaves(String mac, JSONObject chaves) {
 		request.setChaves(mac, chaves);
-		Utilidade.contador = System.currentTimeMillis();
-		while (!Utilidade.passouTempoDemais() && response == null) {
-			try {
-				Thread.sleep(1);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-
-		if (response == null)
-			return false;
-
-		if (response.equals("ok"))
-			return true;
-
-		return false;
-
 	}
 
-	public String getChave(String mac, String chave) {
-		response = null;
+	public void getChave(String mac, String chave) {
 		request.getChave(mac, chave);
-		Utilidade.contador = System.currentTimeMillis();
-		while (!Utilidade.passouTempoDemais() && response == null) {
-			try {
-				Thread.sleep(1);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-
-		return response;
-
 	}
 
-	public boolean setChave(String mac, String chave, String valor) {
-		response = null;
+	public void setChave(String mac, String chave, String valor) {
 		request.setChave(mac, chave, valor);
-		Utilidade.contador = System.currentTimeMillis();
-		while (!Utilidade.passouTempoDemais() && response == null) {
-			try {
-				Thread.sleep(1);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-
-		if (response == null)
-			return false;
-
-		if (response.equals("ok"))
-			return true;
-
-		return false;
 	}
 
-	public boolean deleteChave(String mac, String chave) {
-		response = null;		
+	public void deleteChave(String mac, String chave) {
 		request.deleteChave(mac, chave);
-		Utilidade.contador = System.currentTimeMillis();
-		while (!Utilidade.passouTempoDemais() && response == null) {
-			try {
-				Thread.sleep(1);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-
-		if (response == null)
-			return false;
-
-		if (response.equals("ok"))
-			return true;
-
-		return false;
-		
-
 	}
 
 	@Override
@@ -304,9 +234,21 @@ public class ServerCommunication implements ServerConnection.InterfaceCommand {
 		}
 
 	}
-	
-	public interface OnCommandReceived{
-		void onCommandReveived(String comando);
+
+	public interface OnCommandReceived {
+		void onLoginRealized();
+
+		void onDisconnectedDevice();
+
+		void onLogoutRealized();
+
+		void onKeyReceived(String value);
+		
+		void onKeyReceived(String key, String value);
+
+		void onKeysReceived(String keys);
+
+		void onActionConfirmed();
 	}
 
 }

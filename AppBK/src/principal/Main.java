@@ -16,10 +16,40 @@ public class Main {
 				new OnCommandReceived() {
 
 					@Override
-					public void onCommandReveived(String comando) {
-						System.out.println(comando);
-
+					public void onLoginRealized() {
+						System.out.println("Login Realizado");
 					}
+
+					@Override
+					public void onLogoutRealized() {
+						System.out.println("Logout Realizado");
+					}
+
+					@Override
+					public void onKeyReceived(String key) {
+						System.out.println("Key Value: " + key);
+					}
+
+					@Override
+					public void onKeysReceived(String keys) {
+						System.out.println("Keys Value: " + keys);
+					}
+
+					@Override
+					public void onActionConfirmed() {
+						System.out.println("Acão confirmada");
+					}
+
+					@Override
+					public void onDisconnectedDevice() {
+						System.out.println("Dispositivo desconectado!");
+					}
+
+					@Override
+					public void onKeyReceived(String key, String value) {
+						System.out.println(key + " : " + value);
+					}
+
 				});
 
 		serverCommunication.tryConnect();
@@ -31,26 +61,26 @@ public class Main {
 			comando = scan.nextLine();
 			switch (comando) {
 			case "login":
-				System.out.println(serverCommunication.login("bruno.melo@tcm10.com.br", "8aB1yGj4"));
+				serverCommunication.login("bruno.melo@tcm10.com.br", "8aB1yGj4");
 				break;
 			case "logout":
-				System.out.println(serverCommunication.logout());
+				serverCommunication.logout();
 				break;
 			case "getChaves":
-				System.out.println(serverCommunication.getChaves("11:22:33:44:55:66"));
+				serverCommunication.getChaves("11:22:33:44:55:66");
 				break;
 			case "setChaves":
-				System.out.println(
-						serverCommunication.setChaves("11:22:33:44:55:66", new JSONObject("{\"rele1\":\"1\"}")));
+				serverCommunication.setChaves("11:22:33:44:55:66",
+						new JSONObject("{\"rele1\":\"1\",\"rele2\":\"1\",\"rele3\":\"0\",\"rele4\":\"0\"}"));
 				break;
 			case "getChave":
-				System.out.println(serverCommunication.getChave("11:22:33:44:55:66", "rele1"));
+				serverCommunication.getChave("11:22:33:44:55:66", "rele1");
 				break;
 			case "setChave":
-				System.out.println(serverCommunication.setChave("11:22:33:44:55:66", "rele1", "0"));
+				serverCommunication.setChave("11:22:33:44:55:66", "rele1", "0");
 				break;
 			case "deleteChave":
-				System.out.println(serverCommunication.deleteChave("11:22:33:44:55:66", "rele1"));
+				serverCommunication.deleteChave("11:22:33:44:55:66", "rele1");
 				break;
 			}
 		}
