@@ -8,10 +8,11 @@ import connection.ServerCommunication;
 import connection.ServerCommunication.OnCommandReceived;
 
 public class Main {
+	
+	private static Scanner scan;
 
-	@SuppressWarnings("resource")
 	public static void main(String[] args) throws InterruptedException {
-
+		
 		ServerCommunication serverCommunication = new ServerCommunication("179.107.244.81", 58365,
 				new OnCommandReceived() {
 
@@ -62,11 +63,11 @@ public class Main {
 				});
 
 		serverCommunication.tryConnect();
-
-		Scanner scan = new Scanner(System.in);
+		
+		scan = new Scanner(System.in);
 		String comando = "";
 
-		while (!comando.equals("fim")) {
+		while (!comando.equals("fim")) {			
 			comando = scan.nextLine();
 			switch (comando) {
 			case "islogged":
@@ -82,8 +83,15 @@ public class Main {
 				serverCommunication.getChaves("11:22:33:44:55:66");
 				break;
 			case "setChaves":
-				serverCommunication.setChaves("11:22:33:44:55:66",
-						new JSONObject("{\"rele1\":\"1\",\"rele2\":\"1\",\"rele3\":\"0\",\"rele4\":\"0\"}"));
+				serverCommunication
+				.setChaves(
+						"11:22:33:44:55:66",
+						new JSONObject(
+								"{\"rele1\":\"1\","
+								+ "\"rele2\":\"1\","
+								+ "\"rele3\":\"0\","
+								+ "\"rele4\":\"0\"}")
+						);
 				break;
 			case "getChave":
 				serverCommunication.getChave("11:22:33:44:55:66", "rele1");
