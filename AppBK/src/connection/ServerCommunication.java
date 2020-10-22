@@ -5,7 +5,7 @@ import org.json.JSONObject;
 public class ServerCommunication implements ServerConnection.InterfaceCommand {
 	private String host;
 	private int port;
-	private String response;
+//	private String response;
 	private ServerConnection serverConnection;
 	private Request request = new Request();
 	private OnCommandReceived listener;
@@ -53,6 +53,12 @@ public class ServerCommunication implements ServerConnection.InterfaceCommand {
 				case "Este dispositivo não está conectado":
 					listener.onDisconnectedDevice();
 					break;
+				case "no":
+					listener.onTesteLogin(false);
+					break;
+				case "yes":
+					listener.onTesteLogin(true);
+					break;
 				default:
 					listener.onKeyReceived(stringRecebida);
 				}
@@ -77,10 +83,10 @@ public class ServerCommunication implements ServerConnection.InterfaceCommand {
 
 		}
 	}
-
-	public void login(String login, String password) {
+	
+	public void isLogged() {		
 //		response = null;
-		request.requisicaoLogin(login, password);
+		request.isLogged();		
 //		Utilidade.contador = System.currentTimeMillis();
 //		while (!Utilidade.passouTempoDemais() && response == null) {
 //			try {
@@ -93,10 +99,14 @@ public class ServerCommunication implements ServerConnection.InterfaceCommand {
 //		if (response == null)
 //			return false;
 //
-//		if (response.equals("Cliente login was Successful"))
+//		if (response.equals("yes")) {
 //			return true;
-//
-//		return false;
+//		}
+//			return false;
+	}
+
+	public void login(String login, String password) {
+		request.requisicaoLogin(login, password);
 	}
 
 	public void logout() {
@@ -149,7 +159,7 @@ public class ServerCommunication implements ServerConnection.InterfaceCommand {
 
 	private class Request {
 		private JSONObject requisicao;
-		private String textReq = "{" + "	\"requisicao\": {" + "		\"deviceType\": \"\","
+		private final String TEXT_REQ = "{" + "	\"requisicao\": {" + "		\"deviceType\": \"\","
 				+ "		\"tipoReq\": \"\"," + "		\"login\": \"\"," + "		\"password\": \"\","
 				+ "		\"dados\": {\r\n" + "			\"request\": \"\"," + "			\"mac\": \"\","
 				+ "			\"key\": \"\"," + "			\"value\": \"\"," + "			\"keys\": {"
@@ -158,7 +168,14 @@ public class ServerCommunication implements ServerConnection.InterfaceCommand {
 				+ "	}" + "}";
 
 		public Request() {
-			requisicao = new JSONObject(textReq);
+			requisicao = new JSONObject(TEXT_REQ);
+		}
+		
+		public void isLogged() {
+			resetReq();
+			JSONObject req = requisicao.getJSONObject("requisicao");
+			req.put("tipoReq", "is_logged_request");
+			serverConnection.sendCommand(requisicao.toString());
 		}
 
 		public void requisicaoLogin(String login, String senha) {
@@ -230,13 +247,15 @@ public class ServerCommunication implements ServerConnection.InterfaceCommand {
 
 		private void resetReq() {
 			requisicao = null;
-			requisicao = new JSONObject(textReq);
+			requisicao = new JSONObject(TEXT_REQ);
 		}
 
 	}
 
 	public interface OnCommandReceived {
 		void onLoginRealized();
+
+		void onTesteLogin(boolean b);
 
 		void onDisconnectedDevice();
 

@@ -50,6 +50,15 @@ public class Main {
 						System.out.println(key + " : " + value);
 					}
 
+					@Override
+					public void onTesteLogin(boolean isLogged) {
+						if(isLogged) {
+							System.out.println("Está logado");
+						}else {
+							System.out.println("Não está logado");
+						}						
+					}
+
 				});
 
 		serverCommunication.tryConnect();
@@ -60,6 +69,9 @@ public class Main {
 		while (!comando.equals("fim")) {
 			comando = scan.nextLine();
 			switch (comando) {
+			case "islogged":
+				serverCommunication.isLogged();
+				break;
 			case "login":
 				serverCommunication.login("bruno.melo@tcm10.com.br", "8aB1yGj4");
 				break;
