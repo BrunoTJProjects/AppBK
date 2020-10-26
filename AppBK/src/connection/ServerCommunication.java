@@ -20,7 +20,7 @@ public class ServerCommunication implements ServerConnection.InterfaceCommand {
 
 	public boolean tryConnect() {
 		while (!serverConnection.connect()) {
-			System.out.println(">>>>tentando conexão<<<<<");
+			System.out.println(">>>>tentando conexao<<<<<");
 		}
 		return true;
 	}
@@ -44,13 +44,13 @@ public class ServerCommunication implements ServerConnection.InterfaceCommand {
 				case "Cliente login was Successful":
 					listener.onLoginRealized();
 					break;
-				case "Você foi desconectado":
+				case "Voce foi desconectado":
 					listener.onLogoutRealized();
 					break;
 				case "ok":
 					listener.onActionConfirmed();
 					break;
-				case "Este dispositivo não está conectado":
+				case "Este dispositivo nao esta conectado":
 					listener.onDisconnectedDevice();
 					break;
 				case "no":
