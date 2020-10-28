@@ -120,7 +120,7 @@ public class ServerCommunication implements ServerConnection.InterfaceCommand {
 		request.requisicaoLogin(login, password);
 	}
 	
-	public void login() {
+	private void login() {
 		request.requisicaoLogin(this.login, this.password);
 	}
 
