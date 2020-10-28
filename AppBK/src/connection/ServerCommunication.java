@@ -9,6 +9,8 @@ public class ServerCommunication implements ServerConnection.InterfaceCommand {
 	private ServerConnection serverConnection;
 	private Request request = new Request();
 	private OnCommandReceived listener;
+	private String login;
+	private String password;
 
 	public ServerCommunication(String host, int port, OnCommandReceived listener) {
 		super();
@@ -18,9 +20,16 @@ public class ServerCommunication implements ServerConnection.InterfaceCommand {
 		inicializarComponentes(host, port);
 	}
 
+	private boolean isCredentials() {
+		return login != null && !login.isEmpty() && password != null && !password.isEmpty(); 
+	}
+	
 	public boolean tryConnect() {
 		while (!serverConnection.connect()) {
 			System.out.println(">>>>tentando conexao<<<<<");
+		}
+		if(isCredentials()) {
+			login(login, password);
 		}
 		return true;
 	}
@@ -106,10 +115,18 @@ public class ServerCommunication implements ServerConnection.InterfaceCommand {
 	}
 
 	public void login(String login, String password) {
+		this.login = login;
+		this.password = password;
 		request.requisicaoLogin(login, password);
+	}
+	
+	public void login() {
+		request.requisicaoLogin(this.login, this.password);
 	}
 
 	public void logout() {
+		this.login = null;
+		this.password = null;
 		request.requisicaoLogout();
 	}
 
